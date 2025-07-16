@@ -51,6 +51,7 @@ export default function ScrollVideoSection({
               scrub: true,
               markers: true,
               onUpdate: (self) => {
+                loopVideo.play();
                 const isNowScrolling = self.progress > 0;
                 if (isNowScrolling && isLooping) {
                   setIslooping(false);
@@ -107,32 +108,28 @@ export default function ScrollVideoSection({
     <div ref={mainDivRef} className="relative w-screen">
       <div className="sticky top-0 h-[100lvh] overflow-hidden">
         {/* VIDEO LAYERS */}
-          <div className="absolute inset-0 overflow-hidden ">
-            {/* Scroll-controlled video */}
-            <video
-              ref={scrollVideoRef}
-              className={`absolute inset-0 w-full h-full object-contain aspect-video transition-opacity duration-0 ${
-                isLooping ? "opacity-0" : "opacity-100"
-              }`}
-              src={scrollVideoSrc}
-              muted
-              playsInline
-              preload="auto"
-            />
+        <div className="absolute inset-0 overflow-hidden ">
+          {/* Scroll-controlled video */}
+          <video
+            ref={scrollVideoRef}
+            className={`absolute inset-0 w-full h-full object-contain aspect-video`}
+            src={scrollVideoSrc}
+            muted
+            playsInline
+            preload="auto"
+          />
 
-            {/* Looping video */}
-            <video
-              ref={loopVideoRef}
-              className={`absolute inset-0 w-full h-full object-contain aspect-video transition-opacity duration-0 ${
-                isLooping ? "opacity-100" : "opacity-0"
-              }`}
-              src={loopVideoSrc}
-              loop
-              muted
-              autoPlay
-              playsInline
-              preload="auto"
-            />
+          {/* Looping video */}
+          <video
+            ref={loopVideoRef}
+            className={`absolute inset-0 w-full h-full object-contain aspect-video`}
+            src={loopVideoSrc}
+            loop
+            muted
+            autoPlay
+            playsInline
+            preload="auto"
+          />
         </div>
 
         {/* TEXT OVERLAY */}
