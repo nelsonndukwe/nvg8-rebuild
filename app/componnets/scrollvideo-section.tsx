@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useScrollVideoStore } from "../store/zustand";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,18 +12,26 @@ interface Props {
   loopVideoSrc: string;
   heading?: string;
   subheading?: string;
+  index: number;
+  name: string;
 }
 export default function ScrollVideoSection({
   scrollVideoSrc,
   loopVideoSrc,
   heading = "",
   subheading = "",
+  index,
+  name,
 }: Props) {
   const [isLooping, setIslooping] = useState(true);
   const sectionRef = useRef<HTMLDivElement>(null);
   const mainDivRef = useRef<HTMLDivElement>(null);
   const scrollVideoRef = useRef<HTMLVideoElement>(null);
   const loopVideoRef = useRef<HTMLVideoElement>(null);
+  const setActiveSection = useScrollVideoStore(
+    (state) => state.setActiveSection
+  );
+  const activeSection = useScrollVideoStore((state) => state.activeSection);
 
   useGSAP(
     () => {
@@ -46,11 +55,12 @@ export default function ScrollVideoSection({
             ease: "none",
             scrollTrigger: {
               trigger: section,
-              start: "top-=500 top",
+              start: "top-=100 top",
               end: "bottom top",
-              scrub: true,
-              markers: true,
+              scrub: 0.6,
               onUpdate: (self) => {
+                setActiveSection(name); // ✅ mark section as active
+
                 loopVideo.play();
                 const isNowScrolling = self.progress > 0;
                 if (isNowScrolling && isLooping) {
@@ -105,14 +115,19 @@ export default function ScrollVideoSection({
   );
 
   return (
-    <div ref={mainDivRef} className="relative w-screen">
+    <div
+      ref={mainDivRef}
+      className={`absolute inset-0 w-screen transition-opacity duration-300 ${
+        activeSection === name ? "z-100" : " z-0 pointer-events-none"
+      }`}
+    >
       <div className="sticky top-0 h-[100lvh] overflow-hidden">
         {/* VIDEO LAYERS */}
         <div className="absolute inset-0 overflow-hidden ">
           {/* Scroll-controlled video */}
           <video
             ref={scrollVideoRef}
-            className={`absolute inset-0 w-full h-full object-contain aspect-video`}
+            className={`absolute inset-0 w-full h-full object-cover aspect-video`}
             src={scrollVideoSrc}
             muted
             playsInline
@@ -122,7 +137,7 @@ export default function ScrollVideoSection({
           {/* Looping video */}
           <video
             ref={loopVideoRef}
-            className={`absolute inset-0 w-full h-full object-contain aspect-video`}
+            className={`absolute inset-0 w-full h-full object-cover aspect-video`}
             src={loopVideoSrc}
             loop
             muted
