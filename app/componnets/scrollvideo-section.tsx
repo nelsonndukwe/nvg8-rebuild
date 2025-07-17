@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useScrollVideoStore } from "../store/zustand";
+import styles from "@/app/page.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -55,9 +56,9 @@ export default function ScrollVideoSection({
             ease: "none",
             scrollTrigger: {
               trigger: section,
-              start: "top-=100 top",
+              start: "top-=500 top",
               end: "bottom top",
-              scrub: 0.6,
+              scrub: 0.4,
               onUpdate: (self) => {
                 setActiveSection(name); // ✅ mark section as active
 
@@ -117,7 +118,7 @@ export default function ScrollVideoSection({
   return (
     <div
       ref={mainDivRef}
-      className={`absolute inset-0 w-screen transition-opacity duration-300 ${
+      className={`relative w-screen transition-opacity duration-300 ${
         activeSection === name ? "z-100" : " z-0 pointer-events-none"
       }`}
     >
@@ -148,15 +149,15 @@ export default function ScrollVideoSection({
         </div>
 
         {/* TEXT OVERLAY */}
-        <div className="relative h-full flex items-center justify-center pointer-events-none">
-          <h2 className="text-white text-5xl font-bold max-w-2xl text-center">
-            Your scrolly message appears here
+        <div className="relative h-full flex items-start mt-20 justify-center pointer-events-none">
+          <h2 className={`block text-black text-[107px] font-extrabold max-w-2xl text-center leading-24 ${styles.esquadro}`}>
+            Meet the Navigators
           </h2>
         </div>
       </div>
 
       {/* SCROLL SPACER */}
-      <div ref={sectionRef} className="h-[500vh]" />
+      <div ref={sectionRef} className="h-[525vh]" />
     </div>
   );
 }
