@@ -3,10 +3,10 @@ import { create } from "zustand";
 
 type ScrollVideoStore = {
   activeSection: string | null;
-  setActiveSection: (name: string) => void;
+  setActiveSection: (name: string | null) => void;
 };
 
 export const useScrollVideoStore = create<ScrollVideoStore>((set) => ({
   activeSection: null,
-  setActiveSection: (name: string) => set({ activeSection: name }),
+  setActiveSection: (name: string | null) => set({ activeSection: name }),
 }));

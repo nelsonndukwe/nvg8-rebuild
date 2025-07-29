@@ -4,18 +4,20 @@ import { scrollVideoData } from "./data";
 
 export default function Home() {
   return (
-    <div className="relative flex  w-screen ">
+    <div className="relative h-screen w-screen">
       {/* Absolute stack container */}
-      <div className="flex flex-col ">
+      <div className="">
         {scrollVideoData.map((video, index) => (
+          <div key={index} >
             <ScrollVideoSection
-              key={index}
               index={video.key}
               name={video.name}
               scrollVideoSrc={video.scrollVideoSrc}
               loopVideoSrc={video.loopVideoSrc}
             />
+          </div>
         ))}
+        {/* <LastScrollVideoSection /> */}
       </div>
     </div>
   );

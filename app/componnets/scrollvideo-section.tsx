@@ -56,7 +56,7 @@ export default function ScrollVideoSection({
             ease: "none",
             scrollTrigger: {
               trigger: section,
-              start: "top-=500 top",
+              start: "top-=20 top",
               end: "bottom top",
               scrub: 0.4,
               onUpdate: (self) => {
@@ -78,7 +78,7 @@ export default function ScrollVideoSection({
             zIndex: 0,
             scrollTrigger: {
               trigger: section,
-              start: "top-=500 top",
+              start: "top-=20 top",
               toggleActions: "play none none reverse",
             },
           });
@@ -91,7 +91,7 @@ export default function ScrollVideoSection({
               zIndex: 1,
               scrollTrigger: {
                 trigger: section,
-                start: "top-=500 top",
+                start: "top-=20 top",
                 toggleActions: "play none none reverse",
               },
             }
