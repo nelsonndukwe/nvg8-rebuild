@@ -1,163 +1,104 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { useScrollVideoStore } from "../store/zustand";
-import styles from "@/app/page.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface Props {
+  index: number;
   scrollVideoSrc?: string;
   loopVideoSrc: string;
-  heading?: string;
-  subheading?: string;
-  index: number;
-  name: string;
+  isActive: boolean;
+  onEnter: () => void;
 }
+
 export default function ScrollVideoSection({
+  index,
   scrollVideoSrc,
   loopVideoSrc,
-  heading = "",
-  subheading = "",
-  index,
-  name,
+  isActive,
+  onEnter,
 }: Props) {
-  const [isLooping, setIslooping] = useState(true);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const mainDivRef = useRef<HTMLDivElement>(null);
   const scrollVideoRef = useRef<HTMLVideoElement>(null);
-  const loopVideoRef = useRef<HTMLVideoElement>(null);
-  const setActiveSection = useScrollVideoStore(
-    (state) => state.setActiveSection
-  );
-  const activeSection = useScrollVideoStore((state) => state.activeSection);
+  const triggerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      const scrollVideo = scrollVideoRef.current;
-      const loopVideo = loopVideoRef.current;
-      const section = sectionRef.current;
+  useGSAP(() => {
+    const video = scrollVideoRef.current;
+    const trigger = triggerRef.current;
+    if (!video || !trigger) return;
 
-      if (!scrollVideo || !loopVideo || !section) return;
+    // Wait for video to load metadata (duration)
+    const setup = () => {
+      gsap.to(video, {
+        currentTime: video.duration || 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: trigger,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+          onEnter: onEnter,
+          onEnterBack: onEnter,
+        },
+      });
+    };
 
-      // Ensure clean GSAP setup
-      const ctx = gsap.context(() => {
-        scrollVideo.pause();
-        scrollVideo.currentTime = 0;
+    gsap.fromTo(
+      video,
+      { zIndex: 0, opacity: 0 },
+      {
+        zIndex: 1,
+        opacity: 1,
+        duration: 0.5,
+        scrollTrigger: {
+          trigger: trigger,
+          start: "top-=20 top",
+          toggleActions: "play none none reverse",
+        },
+      }
+    );
 
-        const initScrollAnimation = () => {
-          const duration = scrollVideo.duration || 1;
+    if (video.readyState >= 1) {
+      setup();
+    } else {
+      video.addEventListener("loadedmetadata", setup, { once: true });
+    }
 
-          // 🎞 Scroll-driven video playback
-          gsap.to(scrollVideo, {
-            currentTime: duration,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "top-=20 top",
-              end: "bottom top",
-              scrub: 0.4,
-              onUpdate: (self) => {
-                setActiveSection(name); // ✅ mark section as active
-
-                loopVideo.play();
-                const isNowScrolling = self.progress > 0;
-                if (isNowScrolling && isLooping) {
-                  setIslooping(false);
-                } else if (!isNowScrolling && !isLooping) {
-                  setIslooping(true);
-                }
-              },
-            },
-          });
-
-          // 💨 Fade out loopVideo on scroll start
-          gsap.to(loopVideo, {
-            zIndex: 0,
-            scrollTrigger: {
-              trigger: section,
-              start: "top-=20 top",
-              toggleActions: "play none none reverse",
-            },
-          });
-
-          // 💨 Fade in scrollVideo instantly
-          gsap.fromTo(
-            scrollVideo,
-            { zIndex: 0 },
-            {
-              zIndex: 1,
-              scrollTrigger: {
-                trigger: section,
-                start: "top-=20 top",
-                toggleActions: "play none none reverse",
-              },
-            }
-          );
-
-          // ✅ Force ScrollTrigger to re-measure layout
-          ScrollTrigger.refresh();
-        };
-
-        if (scrollVideo.readyState >= 1) {
-          initScrollAnimation();
-        } else {
-          scrollVideo.addEventListener("loadedmetadata", initScrollAnimation, {
-            once: true,
-          });
-        }
-      }, sectionRef);
-
-      return () => ctx.revert(); // clean up
-    },
-    { scope: sectionRef }
-  );
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
 
   return (
-    <div
-      ref={mainDivRef}
-      className={`relative w-screen transition-opacity duration-300 ${
-        activeSection === name ? "z-100" : " z-0 pointer-events-none"
-      }`}
-    >
-      <div className="sticky top-0 h-[100lvh] overflow-hidden">
-        {/* VIDEO LAYERS */}
-        <div className="absolute inset-0 overflow-hidden ">
-          {/* Scroll-controlled video */}
-          <video
-            ref={scrollVideoRef}
-            className={`absolute inset-0 w-full h-full object-cover aspect-video`}
-            src={scrollVideoSrc}
-            muted
-            playsInline
-            preload="auto"
-          />
-
-          {/* Looping video */}
-          <video
-            ref={loopVideoRef}
-            className={`absolute inset-0 w-full h-full object-cover aspect-video`}
-            src={loopVideoSrc}
-            loop
-            muted
-            autoPlay
-            playsInline
-            preload="auto"
-          />
-        </div>
-
-        {/* TEXT OVERLAY */}
-        <div className="relative h-full flex items-start mt-20 justify-center pointer-events-none">
-          <h2 className={`block text-black text-[107px] font-extrabold max-w-2xl text-center leading-24 ${styles.esquadro}`}>
-            Meet the Navigators
-          </h2>
-        </div>
+    <>
+      <div
+        ref={triggerRef}
+        className="h-[240vh]" // Spacer height for scroll
+      />
+      <div
+        className={`fixed top-0 left-0 w-full h-screen ${
+          isActive ? " z-50" : " z-0 pointer-events-none"
+        }`}
+      >
+        <video
+          ref={scrollVideoRef}
+          className="absolute top-0 left-0  w-full h-full object-cover"
+          src={scrollVideoSrc}
+          muted
+          playsInline
+          preload="auto"
+        />
+        <video
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          src={loopVideoSrc}
+          loop
+          muted
+          autoPlay
+          playsInline
+        />
       </div>
-
-      {/* SCROLL SPACER */}
-      <div ref={sectionRef} className="h-[525vh]" />
-    </div>
+    </>
   );
 }

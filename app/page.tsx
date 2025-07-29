@@ -1,24 +1,23 @@
-import LastScrollVideoSection from "./componnets/scrollvideo-lastsection";
-import ScrollVideoSection from "./componnets/scrollvideo-section";
+"use client";
+import { useEffect, useState } from "react";
 import { scrollVideoData } from "./data";
+import ScrollVideoSection from "./componnets/scrollvideo-section";
 
 export default function Home() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   return (
-    <div className="relative h-screen w-screen">
-      {/* Absolute stack container */}
-      <div className="">
-        {scrollVideoData.map((video, index) => (
-          <div key={index} >
-            <ScrollVideoSection
-              index={video.key}
-              name={video.name}
-              scrollVideoSrc={video.scrollVideoSrc}
-              loopVideoSrc={video.loopVideoSrc}
-            />
-          </div>
-        ))}
-        {/* <LastScrollVideoSection /> */}
-      </div>
-    </div>
+    <main className="relative w-full">
+      {scrollVideoData.map((video, index) => (
+        <ScrollVideoSection
+          key={index}
+          index={index}
+          scrollVideoSrc={video.scrollVideoSrc}
+          loopVideoSrc={video.loopVideoSrc}
+          isActive={activeIndex === index}
+          onEnter={() => setActiveIndex(index)}
+        />
+      ))}
+    </main>
   );
 }
