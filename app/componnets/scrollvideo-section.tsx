@@ -40,7 +40,7 @@ export default function ScrollVideoSection({
           trigger: trigger,
           start: "top top",
           end: "bottom top",
-          scrub: true,
+          scrub: 0.5,
           onEnter: onEnter,
           onEnterBack: onEnter,
         },
