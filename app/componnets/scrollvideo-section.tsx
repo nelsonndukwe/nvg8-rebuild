@@ -86,7 +86,7 @@ export default function ScrollVideoSection({
     <div className="relative">
       <div
         ref={triggerRef}
-        className="h-[218vh]" // Spacer height for scroll
+        className="h-[225vh]" // Spacer height for scroll
       />
       <div
         className={`fixed top-0 left-0 w-full h-screen ${
