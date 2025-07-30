@@ -10,3 +10,6 @@ video {
   will-change: opacity;
   transition: opacity 0.01s linear;
 }
+.esquadro {
+  font-family: "Esquadro", sans-serif;
+}

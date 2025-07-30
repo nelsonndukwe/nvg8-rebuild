@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import {useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -23,10 +23,12 @@ export default function ScrollVideoSection({
 }: Props) {
   const scrollVideoRef = useRef<HTMLVideoElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const loopVideoRef = useRef<HTMLVideoElement>(null);
 
   useGSAP(() => {
     const video = scrollVideoRef.current;
     const trigger = triggerRef.current;
+    const loopVideo = loopVideoRef.current;
     if (!video || !trigger) return;
 
     // Wait for video to load metadata (duration)
@@ -43,22 +45,31 @@ export default function ScrollVideoSection({
           onEnterBack: onEnter,
         },
       });
-    };
 
-    gsap.fromTo(
-      video,
-      { zIndex: 0, opacity: 0 },
-      {
-        zIndex: 1,
-        opacity: 1,
-        duration: 0.5,
+      // 💨 Fade out loopVideo on scroll start
+      gsap.to(loopVideo, {
+        zIndex: 0,
         scrollTrigger: {
           trigger: trigger,
-          start: "top-=20 top",
+          start: "top+=100 top",
           toggleActions: "play none none reverse",
         },
-      }
-    );
+      });
+
+      // 💨 Fade in scrollVideo instantly
+      gsap.fromTo(
+        video,
+        { zIndex: 0 },
+        {
+          zIndex: 1,
+          scrollTrigger: {
+            trigger: trigger,
+            start: "top+=100 top",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    };
 
     if (video.readyState >= 1) {
       setup();
@@ -72,33 +83,43 @@ export default function ScrollVideoSection({
   }, []);
 
   return (
-    <>
+    <div className="relative">
       <div
         ref={triggerRef}
-        className="h-[240vh]" // Spacer height for scroll
+        className="h-[225vh]" // Spacer height for scroll
       />
       <div
         className={`fixed top-0 left-0 w-full h-screen ${
           isActive ? " z-50" : " z-0 pointer-events-none"
         }`}
       >
+        {scrollVideoSrc && (
+          <video
+            ref={scrollVideoRef}
+            className="absolute top-0 left-0  w-full h-full object-cover aspect-video"
+            src={scrollVideoSrc}
+            muted
+            playsInline
+            preload="auto"
+          />
+        )}
         <video
-          ref={scrollVideoRef}
-          className="absolute top-0 left-0  w-full h-full object-cover"
-          src={scrollVideoSrc}
-          muted
-          playsInline
-          preload="auto"
-        />
-        <video
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-cover aspect-video"
           src={loopVideoSrc}
+          ref={loopVideoRef}
           loop
           muted
           autoPlay
           playsInline
         />
       </div>
-    </>
+
+       {/* TEXT OVERLAY
+       <div className="relative h-full flex items-start mt-20 justify-center pointer-events-none">
+          <h2 className={`block text-black text-[107px] font-extrabold max-w-2xl text-center leading-24 esquadro`}>
+            Meet the Navigators
+          </h2>
+        </div> */}
+    </div>
   );
 }

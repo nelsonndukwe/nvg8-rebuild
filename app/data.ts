@@ -35,4 +35,16 @@ export const scrollVideoData = [
     scrollVideoSrc: "videos/NAVIGATE_4K_S40-scrolly@sm.mp4",
     loopVideoSrc: "videos/NAVIGATE_4K_S40_loop@sm.mp4",
   },
+
+  {
+    key: 5,
+    name: "s60",
+    scrollVideoSrc: "videos/NAVIGATE_4K_S40-scrolly@sm.mp4",
+    loopVideoSrc: "videos/NAVIGATE_4K_S40_loop@sm.mp4",
+  },
+  //{
+  //   key: 6,
+  //   name: "s70",
+  //   loopVideoSrc: "videos/NAVIGATE_4K_S50_loop@sm.mp4",
+  // },
 ];

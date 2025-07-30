@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import { scrollVideoData } from "./data";
 import ScrollVideoSection from "./componnets/scrollvideo-section";
 
@@ -19,5 +19,5 @@ export default function Home() {
         />
       ))}
     </main>
-  );
+  ); 
 }
